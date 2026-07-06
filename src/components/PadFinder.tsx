@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   data,
   getBrands,
@@ -64,8 +64,44 @@ export default function PadFinder() {
     else step = "model";
   }
 
+  // Sticky zoekbalk zodra de hero (met de grote zoekbalk) uit beeld is
+  const [stickyZichtbaar, setStickyZichtbaar] = useState(false);
+  useEffect(() => {
+    const hero = document.querySelector(".hero");
+    if (!hero) return;
+    const check = () => setStickyZichtbaar(hero.getBoundingClientRect().bottom < 0);
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
+  }, []);
+
   return (
     <div className="finder">
+      {/* Compacte sticky zoekbalk zodra de hero uit beeld scrolt */}
+      <div
+        className={`stickysearch${stickyZichtbaar ? " stickysearch--visible" : ""}`}
+        aria-hidden={!stickyZichtbaar}
+      >
+        <div className="stickysearch__inner">
+          <span className="stickysearch__label">Pad Finder</span>
+          <input
+            className="stickysearch__input"
+            type="search"
+            inputMode="search"
+            autoComplete="off"
+            placeholder="Zoek op artikelnummer, padcode of model…"
+            aria-label="Zoek op artikelnummer, padcode of model"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            tabIndex={stickyZichtbaar ? 0 : -1}
+          />
+        </div>
+      </div>
+
       {/* Donkere hero-band met titel + Route B: prominente zoekbalk */}
       <section className="hero">
         <div className="hero__inner">
@@ -231,10 +267,15 @@ function BrandStep({
       <ul className="grid grid--brands">
         {brands.map((b) => (
           <li key={b.name}>
-            <button type="button" className="tile" onClick={() => onSelect(b.name)}>
-              <span className="tile__name">{b.name}</span>
-              <span className="tile__meta">
-                {b.modelCount} {b.modelCount === 1 ? "model" : "modellen"}
+            <button type="button" className="tile tile--brand" onClick={() => onSelect(b.name)}>
+              <span className="tile__badge" aria-hidden>
+                {b.name[0]}
+              </span>
+              <span className="tile__text">
+                <span className="tile__name">{b.name}</span>
+                <span className="tile__meta">
+                  {b.modelCount} {b.modelCount === 1 ? "model" : "modellen"}
+                </span>
               </span>
             </button>
           </li>
@@ -438,18 +479,23 @@ function ResultCard({
           <div className="card__chips" role="group" aria-labelledby={`compounds-${sku}`}>
             {compounds.map((c, i) => {
               const info = compoundInfo(c.compound);
+              const actief = i === compIdx;
               return (
                 <button
                   key={c.compound}
                   type="button"
-                  className={`chip chip--compound${i === compIdx ? " chip--active" : ""}`}
-                  aria-pressed={i === compIdx}
+                  className={`chip chip--compound${actief ? " chip--active" : ""}`}
+                  // Actieve chip licht op in de backplate-kleur van de compound
+                  style={actief ? { background: info.kleur, borderColor: info.kleur } : undefined}
+                  aria-pressed={actief}
                   onClick={() => {
                     setCompIdx(i);
                     setVarIdx(0);
                   }}
                 >
-                  <span className="chip__dot" style={{ background: info.kleur }} aria-hidden />
+                  {!actief && (
+                    <span className="chip__dot" style={{ background: info.kleur }} aria-hidden />
+                  )}
                   {info.naam}
                 </button>
               );
@@ -601,9 +647,14 @@ function SearchResultsView({
           <ul className="grid grid--brands">
             {brandHits.map((b) => (
               <li key={b}>
-                <button type="button" className="tile" onClick={() => onBrand(b)}>
-                  <span className="tile__name">{b}</span>
-                  <span className="tile__meta">Bekijk modellen</span>
+                <button type="button" className="tile tile--brand" onClick={() => onBrand(b)}>
+                  <span className="tile__badge" aria-hidden>
+                    {b[0]}
+                  </span>
+                  <span className="tile__text">
+                    <span className="tile__name">{b}</span>
+                    <span className="tile__meta">Bekijk modellen</span>
+                  </span>
                 </button>
               </li>
             ))}
@@ -649,6 +700,45 @@ function SearchResultsView({
    Compound guide — Elvedes-catalogus p.8, "Step 1. Choose your compound".
    Vier compounds van zacht naar hard, herkenbaar aan de backplate-kleur.
    ================================================================ */
+
+/* Gestileerd remblok-icoon in de backplate-kleur van de compound */
+function PadIcon({ kleur, grootte = 52 }: { kleur: string; grootte?: number }) {
+  return (
+    <svg
+      className="compoundcard__icon"
+      width={grootte}
+      height={Math.round(grootte * 0.72)}
+      viewBox="0 0 120 86"
+      aria-hidden
+    >
+      {/* montagelip met gat */}
+      <path d="M48 2h24v22H48z" fill={kleur} />
+      <circle cx="60" cy="12" r="5" fill="#fff" />
+      {/* backplate */}
+      <path d="M6 22h108c2 0 4 2 4 4v40c0 8-6 12-12 13-30 5-62 5-92 0C8 78 2 74 2 66V26c0-2 2-4 4-4z" fill={kleur} />
+      {/* remvoering */}
+      <path d="M14 32h92c2 0 4 2 4 4v26c0 5-4 8-8 9-28 4-56 4-84 0-4-1-8-4-8-9V36c0-2 2-4 4-4z" fill="#3f3b3a" />
+    </svg>
+  );
+}
+
+/* Ster-icoon; vulling van de rij via breedte-clip (16px per ster) */
+const STER_PAD =
+  "M12 2.6l2.8 5.8 6.4.9-4.6 4.5 1.1 6.4L12 17.2l-5.7 3 1.1-6.4L2.8 9.3l6.4-.9z";
+const STER_BREEDTE = 16;
+
+function StarRow() {
+  return (
+    <>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <svg key={i} width={STER_BREEDTE} height={STER_BREEDTE} viewBox="0 0 24 24">
+          <path d={STER_PAD} fill="currentColor" />
+        </svg>
+      ))}
+    </>
+  );
+}
+
 function Stars({ waarde, kleur, label }: { waarde: number; kleur: string; label: string }) {
   return (
     <span
@@ -658,10 +748,10 @@ function Stars({ waarde, kleur, label }: { waarde: number; kleur: string; label:
       aria-label={`${label}: ${waarde} van 5 sterren`}
     >
       <span className="stars__bg" aria-hidden>
-        ★★★★★
+        <StarRow />
       </span>
-      <span className="stars__fill" style={{ width: `${(waarde / 5) * 100}%` }} aria-hidden>
-        ★★★★★
+      <span className="stars__fill" style={{ width: `${waarde * STER_BREEDTE}px` }} aria-hidden>
+        <StarRow />
       </span>
     </span>
   );
@@ -681,16 +771,21 @@ function CompoundGuide() {
           {COMPOUNDS.map((c) => (
             <article className="compoundcard" key={c.code} aria-label={`Compound ${c.naam}`}>
               <div className="compoundcard__swatch" style={{ background: c.kleur }} aria-hidden />
-              <h3 className="compoundcard__name">{c.naam}</h3>
-              <p className="compoundcard__meta">
-                {c.materiaal} · backplate {c.backplate}
-                {c.code !== "STD" && (
-                  <>
-                    {" "}
-                    · suffix <strong>{c.code}</strong>
-                  </>
-                )}
-              </p>
+              <div className="compoundcard__head">
+                <div>
+                  <h3 className="compoundcard__name">{c.naam}</h3>
+                  <p className="compoundcard__meta">
+                    {c.materiaal} · backplate {c.backplate}
+                    {c.code !== "STD" && (
+                      <>
+                        {" "}
+                        · suffix <strong>{c.code}</strong>
+                      </>
+                    )}
+                  </p>
+                </div>
+                <PadIcon kleur={c.kleur} />
+              </div>
               <p className="compoundcard__desc">{c.omschrijving}</p>
               <dl className="compoundcard__scores">
                 {c.scores.map((s) => (

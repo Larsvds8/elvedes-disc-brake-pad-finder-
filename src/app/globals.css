@@ -53,7 +53,7 @@ button {
 }
 
 .site-header__inner {
-  max-width: 1080px;
+  max-width: 1440px;
   margin: 0 auto;
   display: flex;
   align-items: stretch;
@@ -103,7 +103,7 @@ button {
 }
 
 .hero__inner {
-  max-width: 1080px;
+  max-width: 1440px;
   margin: 0 auto;
 }
 
@@ -189,7 +189,7 @@ button {
 
 .cascade,
 .searchresults {
-  max-width: 1080px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 36px 20px 72px;
 }
@@ -289,6 +289,8 @@ button {
 
 .crumbs__current {
   font-weight: 700;
+  border-bottom: 3px solid var(--rood);
+  padding-bottom: 1px;
 }
 
 .crumbs__reset {
@@ -339,12 +341,46 @@ button {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
 }
 
 .tile:hover {
   border-color: var(--antraciet);
-  box-shadow: inset 0 -3px 0 var(--rood);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12), inset 0 -3px 0 var(--rood);
+}
+
+/* Merktegels: monogram-blok + naam naast elkaar */
+.tile--brand {
+  flex-direction: row;
+  align-items: center;
+  gap: 13px;
+}
+
+.tile__badge {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--antraciet);
+  color: var(--wit);
+  font-size: 19px;
+  font-weight: 900;
+  transition: background 0.12s ease;
+}
+
+.tile--brand:hover .tile__badge {
+  background: var(--rood);
+}
+
+.tile__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
 }
 
 .tile__name {
@@ -365,8 +401,10 @@ button {
 
 .results {
   display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: 18px;
+  /* auto-fill i.p.v. auto-fit: één resultaat rekt niet uit over de volle
+     paginabreedte maar houdt een normale kaartbreedte aan */
+  grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr));
   align-items: start;
 }
 
@@ -375,6 +413,7 @@ button {
   border: 1px solid var(--rand);
   border-top: 3px solid var(--rood);
   padding: 22px 24px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
 }
 
 .card__match {
@@ -400,13 +439,14 @@ button {
 
 .card__shape img {
   display: block;
-  max-height: 84px;
-  max-width: 140px;
+  max-height: 128px;
+  max-width: 200px;
   width: auto;
   height: auto;
   border: 1px solid var(--rand);
-  padding: 4px;
+  padding: 8px;
   background: var(--wit);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 .card__shape figcaption {
@@ -458,9 +498,16 @@ button {
 }
 
 .chip--active {
-  background: var(--antraciet);
-  border-color: var(--antraciet);
+  background: var(--rood);
+  border-color: var(--rood);
   color: var(--wit);
+}
+
+/* Actieve compound-chip krijgt inline de compound-kleur (guide-kleur);
+   deze klasse regelt alleen contrast en nadruk. */
+.chip--compound.chip--active {
+  color: var(--wit);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 
 .card__compounds,
@@ -638,11 +685,14 @@ button {
   border-radius: 0;
   padding: 12px 16px;
   cursor: pointer;
-  transition: border-color 0.12s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
 }
 
 .hitlist__row:hover {
   border-color: var(--antraciet);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .hitlist__path {
@@ -672,7 +722,7 @@ button {
 }
 
 .compoundguide__inner {
-  max-width: 1080px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 48px 20px 56px;
 }
@@ -694,11 +744,25 @@ button {
   background: var(--wit);
   border: 1px solid var(--rand);
   padding: 0 20px 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
 }
 
 .compoundcard__swatch {
   height: 8px;
   margin: 0 -20px 16px;
+}
+
+.compoundcard__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.compoundcard__icon {
+  flex: none;
+  margin-top: 2px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
 }
 
 .compoundcard__name {
@@ -718,7 +782,6 @@ button {
 .compoundcard__desc {
   margin: 10px 0 0;
   font-size: 14px;
-  min-height: 3.2em;
 }
 
 .compoundcard__scores {
@@ -744,16 +807,21 @@ button {
   margin: 0;
 }
 
+/* Sterren als SVG-iconen; vulling via breedte-clip op de overlay-rij
+   (16px per ster → exacte halve sterren mogelijk) */
 .stars {
   position: relative;
-  display: inline-block;
-  font-size: 15px;
+  display: inline-flex;
   line-height: 1;
-  letter-spacing: 2px;
+}
+
+.stars__bg,
+.stars__fill {
+  display: inline-flex;
 }
 
 .stars__bg {
-  opacity: 0.22;
+  opacity: 0.2;
 }
 
 .stars__fill {
@@ -761,7 +829,12 @@ button {
   left: 0;
   top: 0;
   overflow: hidden;
-  white-space: nowrap;
+  flex-wrap: nowrap;
+}
+
+.stars svg {
+  flex: none;
+  display: block;
 }
 
 .compoundguide__note {
@@ -773,6 +846,67 @@ button {
   padding-left: 12px;
 }
 
+/* ---------------- Sticky zoekbalk ---------------- */
+
+.stickysearch {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--antraciet);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-100%);
+  transition: transform 0.18s ease;
+}
+
+.stickysearch--visible {
+  transform: translateY(0);
+}
+
+.stickysearch__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stickysearch__label {
+  flex: none;
+  color: var(--wit);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stickysearch__input {
+  flex: 1;
+  min-width: 0;
+  max-width: 520px;
+  border: 2px solid var(--wit);
+  background: var(--wit);
+  color: var(--zwart);
+  font: inherit;
+  font-size: 15px;
+  padding: 8px 12px;
+  border-radius: 0;
+  appearance: none;
+}
+
+.stickysearch__input:focus {
+  outline: none;
+  border-color: var(--rood);
+}
+
+@media (max-width: 640px) {
+  .stickysearch__label {
+    display: none;
+  }
+}
+
 /* ---------------- Footer ---------------- */
 
 .site-footer {
@@ -781,7 +915,7 @@ button {
 }
 
 .site-footer__inner {
-  max-width: 1080px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 26px 20px;
   display: flex;
