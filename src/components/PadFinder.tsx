@@ -267,15 +267,10 @@ function BrandStep({
       <ul className="grid grid--brands">
         {brands.map((b) => (
           <li key={b.name}>
-            <button type="button" className="tile tile--brand" onClick={() => onSelect(b.name)}>
-              <span className="tile__badge" aria-hidden>
-                {b.name[0]}
-              </span>
-              <span className="tile__text">
-                <span className="tile__name">{b.name}</span>
-                <span className="tile__meta">
-                  {b.modelCount} {b.modelCount === 1 ? "model" : "modellen"}
-                </span>
+            <button type="button" className="tile" onClick={() => onSelect(b.name)}>
+              <span className="tile__name">{b.name}</span>
+              <span className="tile__meta">
+                {b.modelCount} {b.modelCount === 1 ? "model" : "modellen"}
               </span>
             </button>
           </li>
@@ -462,13 +457,22 @@ function ResultCard({
           <p className="card__kicker">Elvedes-artikelnummer</p>
           <p className="card__sku">{variant ? variant.artikelnummer : sku}</p>
         </div>
-        {padImage(sku) && (
-          <figure className="card__shape">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={padImage(sku)!} alt={`Padvorm van Elvedes ${sku}`} />
-            <figcaption>Padvorm</figcaption>
-          </figure>
-        )}
+        {(() => {
+          const img = padImage(sku);
+          if (!img) return null;
+          return (
+            <figure className="card__shape">
+              {/* Vaste CSS-maten: catalogustekening op ware grootte (1:1 bij 100% zoom) */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img.src}
+                alt={`Padvorm van Elvedes ${sku} op ware grootte`}
+                style={{ width: img.cssWidth, height: img.cssHeight }}
+              />
+              <figcaption>Padvorm · ware grootte</figcaption>
+            </figure>
+          );
+        })()}
       </header>
 
       {compounds.length > 0 && (
@@ -647,14 +651,9 @@ function SearchResultsView({
           <ul className="grid grid--brands">
             {brandHits.map((b) => (
               <li key={b}>
-                <button type="button" className="tile tile--brand" onClick={() => onBrand(b)}>
-                  <span className="tile__badge" aria-hidden>
-                    {b[0]}
-                  </span>
-                  <span className="tile__text">
-                    <span className="tile__name">{b}</span>
-                    <span className="tile__meta">Bekijk modellen</span>
-                  </span>
+                <button type="button" className="tile" onClick={() => onBrand(b)}>
+                  <span className="tile__name">{b}</span>
+                  <span className="tile__meta">Bekijk modellen</span>
                 </button>
               </li>
             ))}

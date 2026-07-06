@@ -8,10 +8,22 @@ import padImageList from "@/data/padImages.json";
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 /* Padvorm-illustraties (uit de Elvedes-catalogus, p.13-17) — per familie-SKU
-   een PNG in public/pads/. padImages.json is de lijst met beschikbare SKU's. */
-const padImageSet = new Set(padImageList as string[]);
-export function padImage(sku: string): string | null {
-  return padImageSet.has(sku) ? `${BASE_PATH}/pads/${sku}.png` : null;
+   een PNG in public/pads/. De catalogustekeningen zijn op ware grootte (1:1);
+   de PNG's zijn gerenderd op 3× PDF-resolutie. Weergave op ware grootte:
+   CSS-px = bronpixels ÷ 3 (naar PDF-punten) × 96/72 (punt → CSS-px) = ×4/9.
+   padImages.json bevat de bronpixelmaten per SKU. */
+const padImageDims = padImageList as unknown as Record<string, { w: number; h: number }>;
+
+export type PadImageInfo = { src: string; cssWidth: number; cssHeight: number };
+
+export function padImage(sku: string): PadImageInfo | null {
+  const d = padImageDims[sku];
+  if (!d) return null;
+  return {
+    src: `${BASE_PATH}/pads/${sku}.png`,
+    cssWidth: Math.round((d.w * 4) / 9),
+    cssHeight: Math.round((d.h * 4) / 9),
+  };
 }
 
 export type PadRecord = {
