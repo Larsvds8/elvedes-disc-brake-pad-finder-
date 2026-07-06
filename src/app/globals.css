@@ -390,18 +390,30 @@ button {
   color: var(--rood);
 }
 
-.card__head {
-  margin-bottom: 6px;
+/* Drie kolommen op brede kaarten: keuze | inhoud | beeld.
+   Op smalle schermen wrappen de kolommen automatisch onder elkaar. */
+.card__body {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 20px 40px;
+}
+
+.card__left {
+  flex: 0 1 320px;
+  min-width: min(280px, 100%);
+}
+
+.card__main {
+  flex: 1 1 380px;
+  min-width: min(320px, 100%);
 }
 
 .card__shape {
   margin: 0;
   flex: none;
   text-align: center;
+  margin-left: auto;
 }
 
 /* Padvorm op ware grootte: breedte/hoogte komen inline uit padImages.json
@@ -748,6 +760,35 @@ button {
 .compoundcard__desc {
   margin: 10px 0 0;
   font-size: 14px;
+}
+
+/* Padvorm van het actieve artikelnummer, ingekleurd per compound */
+.compoundcard__shape {
+  margin: 14px 0 0;
+  text-align: center;
+}
+
+.compoundcard__shape img {
+  display: inline-block;
+  max-width: 100%;
+  max-height: 150px;
+  width: auto;
+  height: auto;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.16));
+}
+
+/* Compound bestaat niet voor het actieve artikelnummer */
+.compoundcard--nvt {
+  opacity: 0.55;
+}
+
+.compoundcard__nvt {
+  margin: 10px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--rood);
 }
 
 .compoundcard__scores {

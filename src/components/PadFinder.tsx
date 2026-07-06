@@ -13,6 +13,8 @@ import {
   search,
   compoundInfo,
   padImage,
+  padImageForCompound,
+  compoundsForSku,
   COMPOUNDS,
   type DescVariant,
   type SkuResult,
@@ -62,6 +64,17 @@ export default function PadFinder() {
     if (model) step = "resultaat";
     else if (brandInfo?.hasSeries && serie === undefined) step = "serie";
     else step = "model";
+  }
+
+  // Context-SKU voor de compound guide: alleen wanneer er ondubbelzinnig één
+  // artikelnummer in beeld is (één zoektreffer of één resultaat in de cascade)
+  // tonen de guide-kaarten de padvorm van dát artikelnummer.
+  let contextSku: string | null = null;
+  if (searching && results) {
+    if (results.skuHits.length === 1) contextSku = results.skuHits[0].sku;
+  } else if (step === "resultaat" && merk && model) {
+    const skus = [...new Set(recordsForModel(merk, serie ?? null, model).map((r) => r.elvedesSku))];
+    if (skus.length === 1) contextSku = skus[0];
   }
 
   // Sticky zoekbalk zodra de hero (met de grote zoekbalk) uit beeld is
@@ -186,7 +199,7 @@ export default function PadFinder() {
         </section>
       )}
 
-      <CompoundGuide />
+      <CompoundGuide contextSku={contextSku} />
     </div>
   );
 }
@@ -449,149 +462,156 @@ function ResultCard({
     : [];
   const fits = showFits ? fitsSummary(sku) : null;
 
+  const shapeImg = padImage(sku);
+
   return (
     <article className="card" aria-label={`Elvedes ${sku}`}>
       {matchLabel && <p className="card__match">Gevonden via {matchLabel}</p>}
-      <header className="card__head">
-        <div>
+
+      {/* Drie kolommen op brede schermen: keuze | inhoud | beeld */}
+      <div className="card__body">
+        <div className="card__left">
           <p className="card__kicker">Elvedes-artikelnummer</p>
           <p className="card__sku">{variant ? variant.artikelnummer : sku}</p>
-        </div>
-        {(() => {
-          const img = padImage(sku);
-          if (!img) return null;
-          return (
-            <figure className="card__shape">
-              {/* Vaste CSS-maten: catalogustekening op ware grootte (1:1 bij 100% zoom) */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.src}
-                alt={`Padvorm van Elvedes ${sku} op ware grootte`}
-                style={{ width: img.cssWidth, height: img.cssHeight }}
-              />
-              <figcaption>Padvorm · ware grootte</figcaption>
-            </figure>
-          );
-        })()}
-      </header>
 
-      {compounds.length > 0 && (
-        <div className="card__compounds">
-          <p className="card__grouplabel" id={`compounds-${sku}`}>
-            Compound
-          </p>
-          <div className="card__chips" role="group" aria-labelledby={`compounds-${sku}`}>
-            {compounds.map((c, i) => {
-              const info = compoundInfo(c.compound);
-              const actief = i === compIdx;
-              return (
-                <button
-                  key={c.compound}
-                  type="button"
-                  className={`chip chip--compound${actief ? " chip--active" : ""}`}
-                  // Actieve chip licht op in de backplate-kleur van de compound
-                  style={actief ? { background: info.kleur, borderColor: info.kleur } : undefined}
-                  aria-pressed={actief}
-                  onClick={() => {
-                    setCompIdx(i);
-                    setVarIdx(0);
-                  }}
-                >
-                  {!actief && (
-                    <span className="chip__dot" style={{ background: info.kleur }} aria-hidden />
-                  )}
-                  {info.naam}
-                </button>
-              );
-            })}
-          </div>
-          <p className="card__compoundhint">
-            <a href="#compound-guide">Welke compound past bij mijn fiets? Bekijk de compound guide ↓</a>
-          </p>
-        </div>
-      )}
-
-      {varianten.length > 1 && (
-        <div className="card__verpakking">
-          <p className="card__grouplabel" id={`verpakking-${sku}`}>
-            Verpakking
-          </p>
-          <div className="card__chips" role="group" aria-labelledby={`verpakking-${sku}`}>
-            {varianten.map((v, i) => (
-              <button
-                key={v.artikelnummer}
-                type="button"
-                className={`chip${i === varIdx ? " chip--active" : ""}`}
-                aria-pressed={i === varIdx}
-                onClick={() => setVarIdx(i)}
-              >
-                {v.artikelnummer === kernArtikel
-                  ? "Kaart (1 paar)"
-                  : v.artikelnummer.slice(kernArtikel.length + 1)}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {variant ? (
-        <>
-          {variant.verpakking && <p className="card__packaging">{variant.verpakking}</p>}
-          {variant.omschrijving && <p className="card__desc">{variant.omschrijving}</p>}
-          {specs.length > 0 && (
-            <dl className="card__specs">
-              {specs.map((s) => {
-                const [k, ...rest] = s.split(":");
-                const val = rest.join(":").trim();
-                return val ? (
-                  <div className="card__specrow" key={s}>
-                    <dt>{k.trim()}</dt>
-                    <dd>{val}</dd>
-                  </div>
-                ) : (
-                  <div className="card__specrow" key={s}>
-                    <dt>{s}</dt>
-                    <dd />
-                  </div>
-                );
-              })}
-            </dl>
+          {compounds.length > 0 && (
+            <div className="card__compounds">
+              <p className="card__grouplabel" id={`compounds-${sku}`}>
+                Compound
+              </p>
+              <div className="card__chips" role="group" aria-labelledby={`compounds-${sku}`}>
+                {compounds.map((c, i) => {
+                  const info = compoundInfo(c.compound);
+                  const actief = i === compIdx;
+                  return (
+                    <button
+                      key={c.compound}
+                      type="button"
+                      className={`chip chip--compound${actief ? " chip--active" : ""}`}
+                      // Actieve chip licht op in de backplate-kleur van de compound
+                      style={actief ? { background: info.kleur, borderColor: info.kleur } : undefined}
+                      aria-pressed={actief}
+                      onClick={() => {
+                        setCompIdx(i);
+                        setVarIdx(0);
+                      }}
+                    >
+                      {!actief && (
+                        <span className="chip__dot" style={{ background: info.kleur }} aria-hidden />
+                      )}
+                      {info.naam}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="card__compoundhint">
+                <a href="#compound-guide">
+                  Welke compound past bij mijn fiets? Bekijk de compound guide ↓
+                </a>
+              </p>
+            </div>
           )}
-        </>
-      ) : (
-        <p className="card__nodesc">
-          Voor dit artikelnummer is nog geen omschrijving beschikbaar in het beschrijvingenbestand.
-        </p>
-      )}
 
-      {(padcodeBases.length > 0 || oemArtikelnummers.length > 0) && (
-        <div className="card__ref">
-          {padcodeBases.length > 0 && (
-            <p>
-              <span className="card__reflabel">Vervangt padcode</span> {padcodeBases.join(", ")}
+          {varianten.length > 1 && (
+            <div className="card__verpakking">
+              <p className="card__grouplabel" id={`verpakking-${sku}`}>
+                Verpakking
+              </p>
+              <div className="card__chips" role="group" aria-labelledby={`verpakking-${sku}`}>
+                {varianten.map((v, i) => (
+                  <button
+                    key={v.artikelnummer}
+                    type="button"
+                    className={`chip${i === varIdx ? " chip--active" : ""}`}
+                    aria-pressed={i === varIdx}
+                    onClick={() => setVarIdx(i)}
+                  >
+                    {v.artikelnummer === kernArtikel
+                      ? "Kaart (1 paar)"
+                      : v.artikelnummer.slice(kernArtikel.length + 1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="card__main">
+          {variant ? (
+            <>
+              {variant.verpakking && <p className="card__packaging">{variant.verpakking}</p>}
+              {variant.omschrijving && <p className="card__desc">{variant.omschrijving}</p>}
+              {specs.length > 0 && (
+                <dl className="card__specs">
+                  {specs.map((s) => {
+                    const [k, ...rest] = s.split(":");
+                    const val = rest.join(":").trim();
+                    return val ? (
+                      <div className="card__specrow" key={s}>
+                        <dt>{k.trim()}</dt>
+                        <dd>{val}</dd>
+                      </div>
+                    ) : (
+                      <div className="card__specrow" key={s}>
+                        <dt>{s}</dt>
+                        <dd />
+                      </div>
+                    );
+                  })}
+                </dl>
+              )}
+            </>
+          ) : (
+            <p className="card__nodesc">
+              Voor dit artikelnummer is nog geen omschrijving beschikbaar in het
+              beschrijvingenbestand.
             </p>
           )}
-          {oemArtikelnummers.length > 0 && (
-            <p>
-              <span className="card__reflabel">OEM-artikelnummer(s)</span>{" "}
-              {oemArtikelnummers.join(", ")}
-            </p>
+
+          {(padcodeBases.length > 0 || oemArtikelnummers.length > 0) && (
+            <div className="card__ref">
+              {padcodeBases.length > 0 && (
+                <p>
+                  <span className="card__reflabel">Vervangt padcode</span>{" "}
+                  {padcodeBases.join(", ")}
+                </p>
+              )}
+              {oemArtikelnummers.length > 0 && (
+                <p>
+                  <span className="card__reflabel">OEM-artikelnummer(s)</span>{" "}
+                  {oemArtikelnummers.join(", ")}
+                </p>
+              )}
+            </div>
+          )}
+
+          {fits && fits.total > 0 && (
+            <details className="card__fits">
+              <summary>
+                Past op {fits.total} {fits.total === 1 ? "model" : "modellen"}
+              </summary>
+              <ul>
+                {fits.items.map((f) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+            </details>
           )}
         </div>
-      )}
 
-      {fits && fits.total > 0 && (
-        <details className="card__fits">
-          <summary>
-            Past op {fits.total} {fits.total === 1 ? "model" : "modellen"}
-          </summary>
-          <ul>
-            {fits.items.map((f) => (
-              <li key={f}>{f}</li>
-            ))}
-          </ul>
-        </details>
-      )}
+        {shapeImg && (
+          <figure className="card__shape">
+            {/* Vaste CSS-maten: catalogustekening op ware grootte (1:1 bij 100% zoom) */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={shapeImg.src}
+              alt={`Padvorm van Elvedes ${sku} op ware grootte`}
+              style={{ width: shapeImg.cssWidth, height: shapeImg.cssHeight }}
+            />
+            <figcaption>Padvorm · ware grootte</figcaption>
+          </figure>
+        )}
+      </div>
     </article>
   );
 }
@@ -756,7 +776,10 @@ function Stars({ waarde, kleur, label }: { waarde: number; kleur: string; label:
   );
 }
 
-function CompoundGuide() {
+function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
+  // Met context-SKU tonen de kaarten de echte padvorm van dat artikelnummer,
+  // ingekleurd per compound; zonder context het generieke padicoon.
+  const beschikbaar = contextSku ? compoundsForSku(contextSku) : null;
   return (
     <section className="compoundguide" id="compound-guide" aria-label="Compound guide">
       <div className="compoundguide__inner">
@@ -765,10 +788,23 @@ function CompoundGuide() {
           Elvedes levert schijfremblokken in vier compounds van verschillende hardheid, elk met
           eigen sterke punten en herkenbaar aan de kleur van de backplate. Kies op basis van het
           type fiets en het gebruik.
+          {contextSku && (
+            <>
+              {" "}
+              De padvormen hieronder zijn van artikelnummer <strong>{contextSku}</strong>.
+            </>
+          )}
         </p>
         <div className="compoundguide__grid">
-          {COMPOUNDS.map((c) => (
-            <article className="compoundcard" key={c.code} aria-label={`Compound ${c.naam}`}>
+          {COMPOUNDS.map((c) => {
+            const skuImg = contextSku ? padImageForCompound(contextSku, c.code) : null;
+            const leverbaar = !beschikbaar || beschikbaar.includes(c.code);
+            return (
+            <article
+              className={`compoundcard${leverbaar ? "" : " compoundcard--nvt"}`}
+              key={c.code}
+              aria-label={`Compound ${c.naam}`}
+            >
               <div className="compoundcard__swatch" style={{ background: c.kleur }} aria-hidden />
               <div className="compoundcard__head">
                 <div>
@@ -783,8 +819,21 @@ function CompoundGuide() {
                     )}
                   </p>
                 </div>
-                <PadIcon kleur={c.kleur} />
+                {!skuImg && <PadIcon kleur={c.kleur} />}
               </div>
+              {skuImg && (
+                <figure className="compoundcard__shape">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={skuImg.src}
+                    alt={`Padvorm van ${contextSku} in compound ${c.naam}`}
+                    style={{ width: skuImg.cssWidth }}
+                  />
+                </figure>
+              )}
+              {!leverbaar && contextSku && (
+                <p className="compoundcard__nvt">Niet leverbaar voor {contextSku}</p>
+              )}
               <p className="compoundcard__desc">{c.omschrijving}</p>
               <dl className="compoundcard__scores">
                 {c.scores.map((s) => (
@@ -797,7 +846,8 @@ function CompoundGuide() {
                 ))}
               </dl>
             </article>
-          ))}
+            );
+          })}
         </div>
         <p className="compoundguide__note">
           Tip: nieuwe remblokken altijd inremmen (bedding-in). Dat verbetert de remkracht,

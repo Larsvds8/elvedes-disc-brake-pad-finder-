@@ -26,6 +26,19 @@ export function padImage(sku: string): PadImageInfo | null {
   };
 }
 
+/** Padvorm ingekleurd in de backplate-kleur van een compound
+    (pads/<sku>-<code>.png, gegenereerd uit de catalogustekening). */
+export function padImageForCompound(sku: string, code: CompoundCode): PadImageInfo | null {
+  const base = padImage(sku);
+  if (!base) return null;
+  return { ...base, src: `${BASE_PATH}/pads/${sku}-${code}.png` };
+}
+
+/** Welke compounds bestaan er voor deze familie-SKU? */
+export function compoundsForSku(sku: string): CompoundCode[] {
+  return (data.skuDescriptions[sku] ?? []).map((g) => g.compound);
+}
+
 export type PadRecord = {
   merk: string;
   serie: string | null;
