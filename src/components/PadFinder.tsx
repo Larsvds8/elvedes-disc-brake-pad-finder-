@@ -12,6 +12,7 @@ import {
   fitsSummary,
   search,
   compoundInfo,
+  padImage,
   COMPOUNDS,
   type DescVariant,
   type SkuResult,
@@ -420,6 +421,13 @@ function ResultCard({
           <p className="card__kicker">Elvedes-artikelnummer</p>
           <p className="card__sku">{variant ? variant.artikelnummer : sku}</p>
         </div>
+        {padImage(sku) && (
+          <figure className="card__shape">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={padImage(sku)!} alt={`Padvorm van Elvedes ${sku}`} />
+            <figcaption>Padvorm</figcaption>
+          </figure>
+        )}
       </header>
 
       {compounds.length > 0 && (

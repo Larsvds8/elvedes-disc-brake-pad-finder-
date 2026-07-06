@@ -386,6 +386,36 @@ button {
 
 .card__head {
   margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.card__shape {
+  margin: 0;
+  flex: none;
+  text-align: center;
+}
+
+.card__shape img {
+  display: block;
+  max-height: 84px;
+  max-width: 140px;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--rand);
+  padding: 4px;
+  background: var(--wit);
+}
+
+.card__shape figcaption {
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--grijs-tekst);
 }
 
 .card__kicker {

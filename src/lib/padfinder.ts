@@ -3,8 +3,16 @@
  * Bron: src/data/padfinder.json (gegenereerd door scripts/build-data.mjs).
  */
 import raw from "@/data/padfinder.json";
+import padImageList from "@/data/padImages.json";
 
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+/* Padvorm-illustraties (uit de Elvedes-catalogus, p.13-17) — per familie-SKU
+   een PNG in public/pads/. padImages.json is de lijst met beschikbare SKU's. */
+const padImageSet = new Set(padImageList as string[]);
+export function padImage(sku: string): string | null {
+  return padImageSet.has(sku) ? `${BASE_PATH}/pads/${sku}.png` : null;
+}
 
 export type PadRecord = {
   merk: string;
