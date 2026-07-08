@@ -938,7 +938,7 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
               )}
               {!leverbaar && contextSku && (
                 <div className="compoundcard__nvtbox" role="note">
-                  <span className="compoundcard__nvt">Niet beschikbaar</span>
+                  <span className="compoundcard__nvt">Niet in het assortiment</span>
                   <span className="compoundcard__nvtsub">
                     Artikelnummer {contextSku} wordt niet in {c.naam} geleverd.
                   </span>
