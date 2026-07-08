@@ -828,7 +828,7 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
                 </div>
                 {!skuImg && <PadIcon kleur={c.kleur} />}
               </div>
-              {skuImg && (
+              {skuImg && leverbaar && (
                 <figure className="compoundcard__shape">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -839,7 +839,12 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
                 </figure>
               )}
               {!leverbaar && contextSku && (
-                <p className="compoundcard__nvt">Niet leverbaar voor {contextSku}</p>
+                <div className="compoundcard__nvtbox" role="note">
+                  <span className="compoundcard__nvt">Niet beschikbaar</span>
+                  <span className="compoundcard__nvtsub">
+                    Artikelnummer {contextSku} wordt niet in {c.naam} geleverd.
+                  </span>
+                </div>
               )}
               <p className="compoundcard__desc">{c.omschrijving}</p>
               <dl className="compoundcard__scores">

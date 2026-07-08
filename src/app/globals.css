@@ -792,18 +792,41 @@ button {
   filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.16));
 }
 
-/* Compound bestaat niet voor het actieve artikelnummer */
-.compoundcard--nvt {
-  opacity: 0.55;
+/* Compound bestaat niet voor het actieve artikelnummer: de kaartinhoud
+   dempen, maar de melding zelf op volle sterkte laten. */
+.compoundcard--nvt .compoundcard__swatch,
+.compoundcard--nvt .compoundcard__head,
+.compoundcard--nvt .compoundcard__desc,
+.compoundcard--nvt .compoundcard__scores {
+  opacity: 0.45;
+}
+
+/* Vervangt de padvorm op de kaart, dus qua maat vergelijkbaar met
+   .compoundcard__shape (max-height 150px). */
+.compoundcard__nvtbox {
+  margin: 14px 0 0;
+  min-height: 96px;
+  border: 1px dashed var(--grijs-tekst);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 14px 16px;
+  text-align: center;
 }
 
 .compoundcard__nvt {
-  margin: 10px 0 0;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--rood);
+}
+
+.compoundcard__nvtsub {
+  font-size: 13px;
+  color: var(--grijs-tekst);
 }
 
 .compoundcard__scores {
