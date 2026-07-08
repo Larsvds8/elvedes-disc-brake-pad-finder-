@@ -46,92 +46,56 @@ button {
   outline-offset: 2px;
 }
 
-/* ---------------- Header (naar het model van elvedes.nl) ----------------
-   Dun donker utility-stripje bovenaan, daaronder de donkere navigatiebalk
-   met witte uppercase items (actief = wit blok) en links een wit
-   logopaneel dat onder de balk uitsteekt, over de hero heen. */
+/* ---------------- Header ----------------
+   Eén witte balk, één rechte lijn eronder: logo en paginatitel op
+   dezelfde hoogte, rechts een bescheiden link naar de hoofdsite. */
 
 .site-header {
-  background: var(--antraciet);
-  position: relative;
-  z-index: 20;
-}
-
-.site-header__top {
-  background: #1f2122;
-}
-
-.site-header__topinner {
-  max-width: 1880px;
-  margin: 0 auto;
-  padding: 6px 20px;
-  text-align: right;
-}
-
-.site-header__topinner a {
-  color: var(--hero-tekst);
-  font-size: 12px;
-  text-decoration: none;
-}
-
-.site-header__topinner a:hover {
-  color: var(--wit);
-  text-decoration: underline;
+  background: var(--wit);
+  border-bottom: 1px solid var(--rand);
 }
 
 .site-header__inner {
   max-width: 1880px;
   margin: 0 auto;
+  padding: 0 20px;
   display: flex;
-  align-items: stretch;
-  padding: 0 20px 0 0;
+  align-items: center;
+  gap: 24px;
 }
 
 .site-header__logo {
-  background: var(--wit);
   display: flex;
   align-items: center;
-  padding: 22px 40px;
-  margin-bottom: -28px; /* steekt onder de balk uit, over de hero heen */
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  padding: 16px 0;
 }
 
 .site-header__logo img {
   display: block;
-  width: 150px;
+  width: 132px;
   height: auto;
 }
 
-.site-header__nav {
-  display: flex;
-  align-items: stretch;
-  padding-left: 26px;
-}
-
-.site-header__navitem {
-  display: flex;
-  align-items: center;
-  background: none;
-  color: var(--wit);
+.site-header__titel {
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  color: var(--antraciet);
+  border-left: 1px solid var(--rand);
+  padding-left: 24px;
+}
+
+.site-header__extern {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--grijs-tekst);
   text-decoration: none;
-  padding: 22px 18px;
-  transition: background 0.12s ease, color 0.12s ease;
 }
 
-a.site-header__navitem:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--wit);
-}
-
-.site-header__navitem--actief {
-  background: var(--wit);
-  color: var(--zwart);
+.site-header__extern:hover {
+  color: var(--rood);
+  text-decoration: underline;
 }
 
 /* ---------------- Hero met zoekfunctie (Route B) ---------------- */
@@ -1135,26 +1099,24 @@ a.site-header__navitem:hover {
 /* ---------------- Mobiel ---------------- */
 
 @media (max-width: 640px) {
+  .site-header__inner {
+    gap: 14px;
+  }
+
   .site-header__logo {
-    padding: 14px 18px;
-    margin-bottom: -16px;
+    padding: 12px 0;
   }
 
   .site-header__logo img {
-    width: 108px;
+    width: 100px;
   }
 
-  .site-header__nav {
-    padding-left: 10px;
-  }
-
-  .site-header__navitem {
+  .site-header__titel {
     font-size: 11px;
-    padding: 14px 10px;
+    padding-left: 14px;
   }
 
-  /* Op smalle schermen alleen het actieve item tonen */
-  a.site-header__navitem {
+  .site-header__extern {
     display: none;
   }
 
