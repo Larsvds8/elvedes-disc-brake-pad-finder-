@@ -67,17 +67,17 @@ button {
 .site-header__logo {
   display: flex;
   align-items: center;
-  padding: 16px 0;
+  padding: 22px 0;
 }
 
 .site-header__logo img {
   display: block;
-  width: 132px;
+  width: 176px;
   height: auto;
 }
 
 .site-header__titel {
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -1104,15 +1104,15 @@ button {
   }
 
   .site-header__logo {
-    padding: 12px 0;
+    padding: 14px 0;
   }
 
   .site-header__logo img {
-    width: 100px;
+    width: 124px;
   }
 
   .site-header__titel {
-    font-size: 11px;
+    font-size: 13px;
     padding-left: 14px;
   }
 

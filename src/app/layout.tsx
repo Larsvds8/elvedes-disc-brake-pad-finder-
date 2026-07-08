@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="site-header__inner">
             <a className="site-header__logo" href={`${BASE_PATH}/`} aria-label="Elvedes — home">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${BASE_PATH}/elvedes-logo.png`} alt="Elvedes" width={132} height={42} />
+              <img src={`${BASE_PATH}/elvedes-logo.png`} alt="Elvedes" width={176} height={56} />
             </a>
             <span className="site-header__titel" aria-current="page">
               Disc Brake Pad Finder
