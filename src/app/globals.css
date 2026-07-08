@@ -792,6 +792,104 @@ button {
   filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.16));
 }
 
+/* ---------------- Ware-grootte-kalibratie ---------------- */
+
+.calibrate__intro {
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.calibrate__toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--grijs-tekst);
+  text-decoration: underline;
+}
+
+.calibrate__toggle:hover {
+  color: var(--antraciet);
+}
+
+.calibrate {
+  margin: 12px 0 0;
+  padding: 14px;
+  border: 1px solid var(--rand);
+  background: var(--wit);
+  text-align: center;
+}
+
+.calibrate__uitleg {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--grijs-tekst);
+}
+
+.calibrate__pas {
+  margin: 0 auto;
+  border: 2px solid var(--antraciet);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 8px,
+    rgba(0, 0, 0, 0.04) 8px,
+    rgba(0, 0, 0, 0.04) 16px
+  );
+}
+
+.calibrate__pas span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--grijs-tekst);
+}
+
+.calibrate__slider {
+  width: 100%;
+  max-width: 420px;
+  margin: 12px auto 0;
+  display: block;
+  accent-color: var(--rood);
+}
+
+.calibrate__acties {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.calibrate__opslaan {
+  background: var(--rood);
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.calibrate__wissen {
+  background: none;
+  border: 1px solid var(--rand);
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--grijs-tekst);
+}
+
+.calibrate__wissen:hover,
+.calibrate__opslaan:hover {
+  filter: brightness(1.08);
+}
+
 /* Compound bestaat niet voor het actieve artikelnummer: de kaartinhoud
    dempen, maar de melding zelf op volle sterkte laten. */
 .compoundcard--nvt .compoundcard__swatch,

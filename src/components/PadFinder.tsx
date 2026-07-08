@@ -21,6 +21,14 @@ import {
   type SkuResult,
   type ModelInfo,
 } from "@/lib/padfinder";
+import {
+  useTrueSizeScale,
+  currentPxPerMm,
+  isCalibrated,
+  saveCalibration,
+  clearCalibration,
+  BANKPAS_MM,
+} from "@/lib/useTrueSize";
 
 /* ================================================================
    Hoofdcomponent — twee gelijkwaardige ingangen:
@@ -470,6 +478,7 @@ function ResultCard({
   const fits = showFits ? fitsSummary(sku) : null;
 
   const shapeImg = padImage(sku);
+  const sizeScale = useTrueSizeScale();
 
   return (
     <article className="card" aria-label={`Elvedes ${sku}`}>
@@ -608,14 +617,19 @@ function ResultCard({
 
         {shapeImg && (
           <figure className="card__shape">
-            {/* Vaste CSS-maten: catalogustekening op ware grootte (1:1 bij 100% zoom) */}
+            {/* Catalogustekening op ware grootte: 96dpi-basismaat × ware-groottefactor
+                (zoomcompensatie + evt. bankpas-kalibratie, zie useTrueSize) */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={shapeImg.src}
               alt={`Padvorm van Elvedes ${sku} op ware grootte`}
-              style={{ width: shapeImg.cssWidth, height: shapeImg.cssHeight }}
+              style={{
+                width: Math.round(shapeImg.cssWidth * sizeScale),
+                height: Math.round(shapeImg.cssHeight * sizeScale),
+              }}
             />
             <figcaption>Padvorm · ware grootte</figcaption>
+            <TrueSizeCalibration />
           </figure>
         )}
       </div>
@@ -723,6 +737,89 @@ function SearchResultsView({
 }
 
 /* ================================================================
+   Ware-grootte-kalibratie — browsers kennen de echte schermmaat niet;
+   met een bankpas (85,60 mm) tegen het scherm stelt de gebruiker de
+   px/mm-verhouding één keer per apparaat in. Zie useTrueSize.ts.
+   ================================================================ */
+function TrueSizeCalibration() {
+  useTrueSizeScale(); // re-render bij zoom- of kalibratiewijziging
+  const [open, setOpen] = useState(false);
+  const [px, setPx] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const gekalibreerd = mounted && isCalibrated();
+
+  if (!open) {
+    return (
+      <p className="calibrate__intro">
+        <button
+          type="button"
+          className="calibrate__toggle"
+          onClick={() => {
+            setPx(Math.round(currentPxPerMm() * BANKPAS_MM));
+            setOpen(true);
+          }}
+        >
+          {gekalibreerd
+            ? "Maat opnieuw kalibreren"
+            : "Klopt de maat niet? Kalibreer met een bankpas"}
+        </button>
+      </p>
+    );
+  }
+  return (
+    <div className="calibrate" role="group" aria-label="Ware grootte kalibreren">
+      <p className="calibrate__uitleg">
+        Houd een bankpas tegen het scherm en sleep tot de rechthoek precies even breed is.
+        Dit hoeft maar één keer per apparaat.
+      </p>
+      <div
+        className="calibrate__pas"
+        style={{ width: px, height: Math.round((px * 53.98) / BANKPAS_MM) }}
+      >
+        <span>bankpas · 85,6 mm</span>
+      </div>
+      <input
+        type="range"
+        className="calibrate__slider"
+        min={Math.round(BANKPAS_MM * 1.8)}
+        max={Math.round(BANKPAS_MM * 7)}
+        value={px}
+        onChange={(e) => setPx(Number(e.target.value))}
+        aria-label="Breedte van de pasrechthoek"
+      />
+      <div className="calibrate__acties">
+        <button
+          type="button"
+          className="calibrate__opslaan"
+          onClick={() => {
+            saveCalibration(px);
+            setOpen(false);
+          }}
+        >
+          Opslaan
+        </button>
+        {gekalibreerd && (
+          <button
+            type="button"
+            className="calibrate__wissen"
+            onClick={() => {
+              clearCalibration();
+              setOpen(false);
+            }}
+          >
+            Kalibratie wissen
+          </button>
+        )}
+        <button type="button" className="calibrate__wissen" onClick={() => setOpen(false)}>
+          Annuleren
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================
    Compound guide — Elvedes-catalogus p.8, "Step 1. Choose your compound".
    Vier compounds van zacht naar hard, herkenbaar aan de backplate-kleur.
    ================================================================ */
@@ -787,6 +884,7 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
   // Met context-SKU tonen de kaarten de echte padvorm van dat artikelnummer,
   // ingekleurd per compound; zonder context het generieke padicoon.
   const beschikbaar = contextSku ? compoundsForSku(contextSku) : null;
+  const sizeScale = useTrueSizeScale();
   return (
     <section className="compoundguide" id="compound-guide" aria-label="Compound guide">
       <div className="compoundguide__inner">
@@ -834,7 +932,7 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
                   <img
                     src={skuImg.src}
                     alt={`Padvorm van ${contextSku} in compound ${c.naam}`}
-                    style={{ width: skuImg.cssWidth }}
+                    style={{ width: Math.round(skuImg.cssWidth * sizeScale) }}
                   />
                 </figure>
               )}
