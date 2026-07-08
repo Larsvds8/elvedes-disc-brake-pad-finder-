@@ -25,13 +25,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="nl">
       <body className={inter.className}>
         <header className="site-header">
+          {/* Dun utility-stripje zoals op elvedes.nl (Inloggen / Distributeur zoeken) */}
+          <div className="site-header__top">
+            <div className="site-header__topinner">
+              <a href="https://elvedes.nl" rel="noopener">
+                Naar elvedes.nl
+              </a>
+            </div>
+          </div>
           <div className="site-header__inner">
+            {/* Wit logopaneel dat onder de donkere balk uitsteekt — het
+                kenmerkende elvedes.nl-headerdetail */}
             <a className="site-header__logo" href={`${BASE_PATH}/`} aria-label="Elvedes — home">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`${BASE_PATH}/elvedes-logo.png`} alt="Elvedes" width={132} height={44} />
+              <img src={`${BASE_PATH}/elvedes-logo.png`} alt="Elvedes" width={150} height={50} />
             </a>
             <nav className="site-header__nav" aria-label="Hoofdnavigatie">
-              <span className="site-header__navitem" aria-current="page">
+              <a className="site-header__navitem" href="https://elvedes.nl" rel="noopener">
+                Home
+              </a>
+              <span
+                className="site-header__navitem site-header__navitem--actief"
+                aria-current="page"
+              >
                 Disc Brake Pad Finder
               </span>
             </nav>
