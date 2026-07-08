@@ -356,6 +356,21 @@ button {
   font-size: 15px;
 }
 
+/* Merktegels: officieel merklogo boven de naam; ook zonder logo blijft de
+   logozone staan zodat alle tegels in het grid even hoog zijn. */
+.tile--brand .tile__logobox {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tile__logo {
+  max-height: 100%;
+  max-width: min(140px, 100%);
+  object-fit: contain;
+}
+
 .tile__meta {
   font-size: 13px;
   color: var(--grijs-tekst);

@@ -4,6 +4,7 @@
  */
 import raw from "@/data/padfinder.json";
 import padImageList from "@/data/padImages.json";
+import brandLogoList from "@/data/brandLogos.json";
 
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -15,6 +16,15 @@ export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const padImageDims = padImageList as unknown as Record<string, { w: number; h: number }>;
 
 export type PadImageInfo = { src: string; cssWidth: number; cssHeight: number };
+
+/* Officiële merklogo's (public/brands/) — alleen merken met een logo staan
+   in brandLogos.json; de merktegel valt anders terug op alleen tekst. */
+const brandLogos = brandLogoList as Record<string, string>;
+
+export function brandLogo(merk: string): string | null {
+  const file = brandLogos[merk];
+  return file ? `${BASE_PATH}/brands/${file}` : null;
+}
 
 export function padImage(sku: string): PadImageInfo | null {
   const d = padImageDims[sku];

@@ -11,6 +11,7 @@ import {
   recordsForSku,
   fitsSummary,
   search,
+  brandLogo,
   compoundInfo,
   padImage,
   padImageForCompound,
@@ -278,16 +279,22 @@ function BrandStep({
     <div className="step">
       <h2 className="step__title">Kies het merk van je rem</h2>
       <ul className="grid grid--brands">
-        {brands.map((b) => (
-          <li key={b.name}>
-            <button type="button" className="tile" onClick={() => onSelect(b.name)}>
-              <span className="tile__name">{b.name}</span>
-              <span className="tile__meta">
-                {b.modelCount} {b.modelCount === 1 ? "model" : "modellen"}
-              </span>
-            </button>
-          </li>
-        ))}
+        {brands.map((b) => {
+          const logo = brandLogo(b.name);
+          return (
+            <li key={b.name}>
+              <button type="button" className="tile tile--brand" onClick={() => onSelect(b.name)}>
+                <span className="tile__logobox" aria-hidden="true">
+                  {logo && <img className="tile__logo" src={logo} alt="" />}
+                </span>
+                <span className="tile__name">{b.name}</span>
+                <span className="tile__meta">
+                  {b.modelCount} {b.modelCount === 1 ? "model" : "modellen"}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
