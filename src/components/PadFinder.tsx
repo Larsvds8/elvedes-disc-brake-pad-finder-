@@ -973,7 +973,12 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
         </div>
         <p className="compoundguide__note">
           Tip: nieuwe remblokken altijd inremmen (bedding-in). Dat verbetert de remkracht,
-          verlengt de levensduur en voorkomt geluid en ongelijkmatige slijtage.
+          verlengt de levensduur en voorkomt geluid en ongelijkmatige slijtage. Snel en
+          geluidloos inremmen in de werkplaats?{" "}
+          <a href="https://elvedes.nl/dbo" rel="noopener">
+            Bekijk de Elvedes inremmachine (Disc Brake Optimizer)
+          </a>
+          .
         </p>
       </div>
     </section>

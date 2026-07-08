@@ -1034,6 +1034,17 @@ button {
   padding-left: 12px;
 }
 
+.compoundguide__note a {
+  color: var(--antraciet);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.compoundguide__note a:hover {
+  color: var(--rood);
+}
+
 /* ---------------- Sticky zoekbalk ---------------- */
 
 .stickysearch {
