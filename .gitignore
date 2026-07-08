@@ -1,3 +1,4 @@
 node_modules/
 .next/
 Thumbs.db
+tsconfig.tsbuildinfo

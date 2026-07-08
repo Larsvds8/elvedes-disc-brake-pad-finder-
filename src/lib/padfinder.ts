@@ -265,6 +265,20 @@ export function fitsSummary(sku: string): { items: string[]; total: number } {
 
 const clean = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]+/g, "");
 
+/* Jaartalbereiken in modelnamen ("Clara 2000 - 2001"): een zoekopdracht op een
+   jaartal bínnen het bereik (bv. "Clara 2001" of "Louise 1999") moet ook raken. */
+const YEAR_TOKEN_RE = /^(19|20)\d{2}$/;
+const YEAR_RANGE_RE = /(19\d{2}|20\d{2})\s*[-–—]\s*(19\d{2}|20\d{2})/g;
+function parseYearRanges(model: string): [number, number][] {
+  const out: [number, number][] = [];
+  for (const m of model.matchAll(YEAR_RANGE_RE)) {
+    const a = Number(m[1]);
+    const b = Number(m[2]);
+    out.push([Math.min(a, b), Math.max(a, b)]);
+  }
+  return out;
+}
+
 type Prepped = {
   r: PadRecord;
   merk: string;
@@ -273,6 +287,7 @@ type Prepped = {
   padcode: string;
   sku: string;
   oems: string[];
+  yearRanges: [number, number][];
 };
 
 let preppedCache: Prepped[] | null = null;
@@ -285,6 +300,7 @@ function prepped(): Prepped[] {
     padcode: r.padcode ? clean(r.padcode) : "",
     sku: clean(r.elvedesSku),
     oems: r.oemArtikelnummers.map(clean),
+    yearRanges: parseYearRanges(r.model),
   }));
   return preppedCache;
 }
@@ -314,6 +330,62 @@ function matchScore(value: string, q: string, exact: number, prefix: number, inc
   return 0;
 }
 
+/** Directe treffer (OEM-nummer / Elvedes-SKU / variant-artikelnummer / padcode)
+    voor één record en één (deel)query. */
+function directHit(p: Prepped, q: string): { score: number; label: string; matchArtikel?: string } {
+  let score = 0;
+  let label = "";
+  let matchArtikel: string | undefined;
+  for (let i = 0; i < p.oems.length; i++) {
+    const s = matchScore(p.oems[i], q, 100, 80, 60);
+    if (s > score) {
+      score = s;
+      label = `OEM-artikelnummer ${p.r.oemArtikelnummers[i]}`;
+      matchArtikel = undefined;
+    }
+  }
+  const sSku = matchScore(p.sku, q, 95, 75, 0);
+  if (sSku > score) {
+    score = sSku;
+    label = `Elvedes-artikelnummer ${p.r.elvedesSku}`;
+    matchArtikel = undefined;
+  }
+  for (const va of variantIndex().get(p.r.elvedesSku) ?? []) {
+    const s = matchScore(va.clean, q, 95, 75, 0);
+    if (s > score) {
+      score = s;
+      label = `Elvedes-artikelnummer ${va.raw}`;
+      matchArtikel = va.raw;
+    }
+  }
+  const sPad = matchScore(p.padcode, q, 90, 70, 55);
+  if (sPad > score) {
+    score = sPad;
+    label = `padcode ${p.r.padcode}`;
+    matchArtikel = undefined;
+  }
+  return { score, label, matchArtikel };
+}
+
+/** Modelscore voor een (deel)query, incl. jaartal-binnen-bereik
+    (bv. query "2001" raakt model "Clara 2000 - 2001"). */
+function modelScore(p: Prepped, q: string): number {
+  const s = matchScore(p.model, q, 65, 50, 40);
+  if (s) return s;
+  if (YEAR_TOKEN_RE.test(q) && p.yearRanges.some(([a, b]) => Number(q) >= a && Number(q) <= b)) return 40;
+  return 0;
+}
+
+/** Matcht dit losse zoekwoord ergens op merk, serie of model? */
+function tokenMatches(p: Prepped, t: string): boolean {
+  const inc = t.length >= 3 ? 1 : 0;
+  return (
+    matchScore(p.merk, t, 1, 1, inc) > 0 ||
+    matchScore(p.serie, t, 1, 1, inc) > 0 ||
+    modelScore(p, t) > 0
+  );
+}
+
 export type SkuHit = {
   sku: string;
   score: number;
@@ -332,7 +404,8 @@ export type SearchResults = {
 };
 
 export function search(query: string): SearchResults {
-  const q = clean(query);
+  const tokens = query.split(/\s+/).map(clean).filter(Boolean);
+  const q = tokens.join("");
   const empty: SearchResults = { query, brandHits: [], skuHits: [], modelHits: [] };
   if (q.length < 2) return empty;
 
@@ -341,37 +414,26 @@ export function search(query: string): SearchResults {
   const brandSet = new Set<string>();
 
   for (const p of prepped()) {
+    /* Merk- en/of serietokens vooraan wegstrippen, zodat "Shimano BR-9000",
+       "Shimano Dura-Ace BR-9000" of "XTR BR-M950" hetzelfde vinden als het
+       kale model/artikelnummer. Alleen tokens die dit record zelf raken
+       worden geconsumeerd. */
+    let rem = tokens;
+    while (rem.length > 1) {
+      const t = rem[0];
+      const pre = t.length >= 3 ? 1 : 0;
+      const isMerk = matchScore(p.merk, t, 1, pre, 0) > 0;
+      const isSerie = p.serie ? matchScore(p.serie, t, 1, pre, 0) > 0 : false;
+      if (!isMerk && !isSerie) break;
+      rem = rem.slice(1);
+    }
+    const rq = rem.length < tokens.length ? rem.join("") : "";
+
     // Directe treffers: OEM-artikelnummer, Elvedes SKU, padcode → resultaatkaart
-    let direct = 0;
-    let label = "";
-    let matchArtikel: string | undefined;
-    for (let i = 0; i < p.oems.length; i++) {
-      const s = matchScore(p.oems[i], q, 100, 80, 60);
-      if (s > direct) {
-        direct = s;
-        label = `OEM-artikelnummer ${p.r.oemArtikelnummers[i]}`;
-        matchArtikel = undefined;
-      }
-    }
-    const sSku = matchScore(p.sku, q, 95, 75, 0);
-    if (sSku > direct) {
-      direct = sSku;
-      label = `Elvedes-artikelnummer ${p.r.elvedesSku}`;
-      matchArtikel = undefined;
-    }
-    for (const va of variantIndex().get(p.r.elvedesSku) ?? []) {
-      const s = matchScore(va.clean, q, 95, 75, 0);
-      if (s > direct) {
-        direct = s;
-        label = `Elvedes-artikelnummer ${va.raw}`;
-        matchArtikel = va.raw;
-      }
-    }
-    const sPad = matchScore(p.padcode, q, 90, 70, 55);
-    if (sPad > direct) {
-      direct = sPad;
-      label = `padcode ${p.r.padcode}`;
-      matchArtikel = undefined;
+    let { score: direct, label, matchArtikel } = directHit(p, q);
+    if (rq) {
+      const d2 = directHit(p, rq);
+      if (d2.score > direct) ({ score: direct, label, matchArtikel } = d2);
     }
     if (direct > 0) {
       const hit = skuMap.get(p.r.elvedesSku);
@@ -390,11 +452,19 @@ export function search(query: string): SearchResults {
 
     // Teksttreffers: merk / serie / model → navigatie de cascade in
     if (matchScore(p.merk, q, 70, 55, 45) > 0) brandSet.add(p.r.merk);
-    const mScore = Math.max(
-      matchScore(p.model, q, 65, 50, 40),
-      matchScore(p.serie, q, 48, 42, 36),
-      matchScore(p.merk, q, 0, 0, 0) // merk alleen via brandHits
+    let mScore = Math.max(
+      modelScore(p, q),
+      matchScore(p.serie, q, 48, 42, 36)
     );
+    // Query zonder merk-/serieprefix opnieuw tegen model en serie houden
+    if (rq) mScore = Math.max(mScore, modelScore(p, rq), matchScore(p.serie, rq, 48, 42, 36));
+    /* Vangnet voor meerwoordige zoekopdrachten ("clara 2001"): elk token moet
+       ergens op merk, serie of model raken, en minstens één op het model. */
+    if (mScore === 0 && tokens.length > 1) {
+      if (tokens.every((t) => tokenMatches(p, t)) && tokens.some((t) => modelScore(p, t) > 0)) {
+        mScore = 38;
+      }
+    }
     if (mScore > 0) {
       const key = `${p.r.merk}|${p.r.serie ?? ""}|${p.r.model}`;
       const hit = modelMap.get(key);
