@@ -940,6 +940,43 @@ button {
   border-top: 1px solid var(--rand);
 }
 
+/* Uitklapbare keuzehulp per compound (van de schijfremblokken-poster) */
+.compoundcard__meer {
+  margin-top: 12px;
+  border-top: 1px solid var(--rand);
+  padding-top: 10px;
+}
+
+.compoundcard__meer summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--antraciet);
+}
+
+.compoundcard__meer summary::marker {
+  color: var(--compound-kleur, var(--rood));
+}
+
+.compoundcard__meer[open] summary {
+  margin-bottom: 6px;
+}
+
+.compoundcard__meer ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: var(--grijs-tekst);
+}
+
+.compoundcard__meer li {
+  margin: 3px 0;
+}
+
+.compoundcard__meer li::marker {
+  color: var(--compound-kleur, var(--rood));
+}
+
 .compoundcard__scorerow {
   display: flex;
   align-items: baseline;

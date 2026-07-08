@@ -89,7 +89,9 @@ export type PadData = {
 export const data = raw as unknown as PadData;
 
 /** Compound guide — catalogus 2026 p.8 "Step 1. Choose your compound".
-    Scores: aantal sterren (0–5, halve toegestaan) per eigenschap. */
+    Scores: aantal sterren (0–5, halve toegestaan) per eigenschap.
+    `gebruik`: keuzehulp van de schijfremblokken-poster 2026 (onderaan,
+    per backplate-kleur), vertaald uit het Engels. */
 export type CompoundInfo = {
   code: CompoundCode;
   naam: string;
@@ -98,6 +100,7 @@ export type CompoundInfo = {
   kleur: string;
   omschrijving: string;
   scores: { label: string; sterren: number }[];
+  gebruik: string[];
 };
 
 export const COMPOUNDS: CompoundInfo[] = [
@@ -116,6 +119,11 @@ export const COMPOUNDS: CompoundInfo[] = [
       { label: "Slijtvastheid", sterren: 2 },
       { label: "Hittebestendigheid", sterren: 3 },
     ],
+    gebruik: [
+      "Geluidsreducerend",
+      "Voor iedere piepende of lawaaiige schijfrem",
+      "Uitstekende probleemoplosser",
+    ],
   },
   {
     code: "STD",
@@ -131,6 +139,11 @@ export const COMPOUNDS: CompoundInfo[] = [
       { label: "Remkracht", sterren: 4 },
       { label: "Slijtvastheid", sterren: 3.5 },
       { label: "Hittebestendigheid", sterren: 3.5 },
+    ],
+    gebruik: [
+      "Comfortabel en betrouwbaar",
+      "Voor gravelbike, racefiets, trekkingfiets & MTB",
+      "Uitstekend voor dagelijks & sportief gebruik",
     ],
   },
   {
@@ -148,6 +161,11 @@ export const COMPOUNDS: CompoundInfo[] = [
       { label: "Slijtvastheid", sterren: 4 },
       { label: "Hittebestendigheid", sterren: 4 },
     ],
+    gebruik: [
+      "Krachtig",
+      "Voor cargobike, e-bike & MTB",
+      "Uitstekend voor zwaar gebruik",
+    ],
   },
   {
     code: "S",
@@ -163,6 +181,11 @@ export const COMPOUNDS: CompoundInfo[] = [
       { label: "Remkracht", sterren: 4 },
       { label: "Slijtvastheid", sterren: 5 },
       { label: "Hittebestendigheid", sterren: 5 },
+    ],
+    gebruik: [
+      "Slijtvast en hittebestendig",
+      "Voor commerciële cargobike, e-bike & downhill-MTB",
+      "Uitstekend voor intensief gebruik",
     ],
   },
 ];

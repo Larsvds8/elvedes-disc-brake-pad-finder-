@@ -955,6 +955,18 @@ function CompoundGuide({ contextSku }: { contextSku?: string | null }) {
                   </div>
                 ))}
               </dl>
+              {/* Keuzehulp van de schijfremblokken-poster 2026 (per backplate-kleur) */}
+              <details
+                className="compoundcard__meer"
+                style={{ "--compound-kleur": c.kleur } as React.CSSProperties}
+              >
+                <summary>Wanneer kies je {c.naam}?</summary>
+                <ul>
+                  {c.gebruik.map((g) => (
+                    <li key={g}>{g}</li>
+                  ))}
+                </ul>
+              </details>
             </article>
             );
           })}
