@@ -153,7 +153,7 @@ export const COMPOUNDS: CompoundInfo[] = [
     ],
     gebruik: [
       "Comfortabel en betrouwbaar",
-      "Voor gravelbike, racefiets, trekkingfiets & MTB",
+      "Voor gravelbike, racefiets, trekkingfiets, e-bike & MTB",
       "Uitstekend voor dagelijks & sportief gebruik",
     ],
   },
