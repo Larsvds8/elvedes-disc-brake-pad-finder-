@@ -7,10 +7,12 @@ geschikt voor GitHub Pages.
 ## Structuur
 
 ```
-data/      Excel-bronbestanden (compatibiliteit + omschrijvingen)
-brand/     Huisstijl-referentie (screenshots elvedes.nl + logo)
-scripts/   build-data.mjs → genereert src/data/padfinder.json uit de Excels
-src/       Next.js-app (App Router, TypeScript)
+data/              Excel-bronbestanden (compatibiliteit + omschrijvingen)
+brand/             Huisstijl-referentie (screenshots elvedes.nl + logo)
+scripts/           build-data.mjs → src/data/padfinder.json uit de Excels
+                   build-packshots.mjs → src/data/packshots.json uit public/packshots/
+public/packshots/  Verpakkingsfoto's uit de fotodatabase (<artikelnummer>_2.jpg)
+src/               Next.js-app (App Router, TypeScript)
 ```
 
 ## Ontwikkelen
@@ -32,6 +34,18 @@ omschrijvingen: 6866, 6918.
 2. Draai `npm run build:data` en controleer het sanity-rapport — let op nieuwe
    compound-conflicten of SKU's zonder omschrijving.
 3. `npm run build` voor een nieuwe statische export in `out/`.
+
+## Verpakkingsfoto's toevoegen
+
+1. Kopieer de foto's van de verpakkingseenheid uit de fotodatabase
+   (`S:\Fotodatabase\CAT. 12.0\Brake\Disc brake pads`) naar `public/packshots/`.
+   Volgnummer `_2` is altijd de verpakkingsfoto: `6850_2.jpg`, `6854MC-BOX25_2.jpg`, …
+   Vergeet de BOX-, BOX25- en BOX50-varianten niet — elke variant heeft zijn
+   eigen foto; ontbreekt die, dan valt de kaart terug op de foto van het kale
+   artikelnummer.
+2. Klaar — bij de eerstvolgende build/deploy scant `npm run build:packshots`
+   de map en verschijnen de foto's automatisch op de resultaatkaarten
+   (herkend: jpg/jpeg/png/webp/avif, hoofdletterongevoelig).
 
 ## Deployment (GitHub Pages)
 

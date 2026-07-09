@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "build:data": "node scripts/build-data.mjs",
+    "build:packshots": "node scripts/build-packshots.mjs",
     "dev": "next dev",
-    "build": "npm run build:data && next build",
+    "build": "npm run build:data && npm run build:packshots && next build",
     "start": "next start"
   },
   "dependencies": {

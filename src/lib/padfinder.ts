@@ -5,6 +5,7 @@
 import raw from "@/data/padfinder.json";
 import padImageList from "@/data/padImages.json";
 import brandLogoList from "@/data/brandLogos.json";
+import packshotList from "@/data/packshots.json";
 
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -24,6 +25,16 @@ const brandLogos = brandLogoList as Record<string, string>;
 export function brandLogo(merk: string): string | null {
   const file = brandLogos[merk];
   return file ? `${BASE_PATH}/brands/${file}` : null;
+}
+
+/* Verpakkingsfoto's (public/packshots/, manifest via scripts/build-packshots.mjs).
+   Fotodatabase-conventie: <artikelnummer>_2.<ext> = foto van de verpakkingseenheid;
+   sleutels in het manifest zijn genormaliseerd naar hoofdletters. */
+const packshots = packshotList as Record<string, string>;
+
+export function packshotImage(artikelnummer: string): string | null {
+  const file = packshots[artikelnummer.toUpperCase()];
+  return file ? `${BASE_PATH}/packshots/${file}` : null;
 }
 
 export function padImage(sku: string): PadImageInfo | null {
@@ -121,7 +132,7 @@ export const COMPOUNDS: CompoundInfo[] = [
     ],
     gebruik: [
       "Geluidsreducerend",
-      "Voor iedere piepende of lawaaiige schijfrem",
+      "Voor piepende remmen",
       "Uitstekende probleemoplosser",
     ],
   },
@@ -163,7 +174,7 @@ export const COMPOUNDS: CompoundInfo[] = [
     ],
     gebruik: [
       "Krachtig",
-      "Voor cargobike, e-bike & MTB",
+      "Voor cargobike, e-bike, speedpedelec & MTB",
       "Uitstekend voor zwaar gebruik",
     ],
   },
@@ -185,7 +196,7 @@ export const COMPOUNDS: CompoundInfo[] = [
     gebruik: [
       "Slijtvast en hittebestendig",
       "Voor commerciële cargobike, e-bike & downhill-MTB",
-      "Uitstekend voor intensief gebruik",
+      "Voor een lage vervangingsinterval",
     ],
   },
 ];

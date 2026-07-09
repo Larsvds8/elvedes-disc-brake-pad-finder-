@@ -15,6 +15,7 @@ import {
   compoundInfo,
   padImage,
   padImageForCompound,
+  packshotImage,
   compoundsForSku,
   COMPOUNDS,
   type DescVariant,
@@ -478,6 +479,11 @@ function ResultCard({
   const fits = showFits ? fitsSummary(sku) : null;
 
   const shapeImg = padImage(sku);
+  // Verpakkingsfoto van de gekozen variant; kaal artikelnummer als vangnet
+  // zolang er voor een box-variant nog geen eigen foto is toegevoegd.
+  const packshot = variant
+    ? packshotImage(variant.artikelnummer) ?? packshotImage(kernArtikel)
+    : null;
   const sizeScale = useTrueSizeScale();
 
   return (
@@ -615,22 +621,37 @@ function ResultCard({
           )}
         </div>
 
-        {shapeImg && (
-          <figure className="card__shape">
-            {/* Catalogustekening op ware grootte: 96dpi-basismaat × ware-groottefactor
-                (zoomcompensatie + evt. bankpas-kalibratie, zie useTrueSize) */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={shapeImg.src}
-              alt={`Padvorm van Elvedes ${sku} op ware grootte`}
-              style={{
-                width: Math.round(shapeImg.cssWidth * sizeScale),
-                height: Math.round(shapeImg.cssHeight * sizeScale),
-              }}
-            />
-            <figcaption>Padvorm · ware grootte</figcaption>
-            <TrueSizeCalibration />
-          </figure>
+        {(shapeImg || packshot) && (
+          <div className="card__media">
+            {packshot && variant && (
+              <figure className="card__packshot">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={packshot}
+                  alt={`Verpakking van Elvedes ${variant.artikelnummer}`}
+                  loading="lazy"
+                />
+                <figcaption>Verpakking</figcaption>
+              </figure>
+            )}
+            {shapeImg && (
+              <figure className="card__shape">
+                {/* Catalogustekening op ware grootte: 96dpi-basismaat × ware-groottefactor
+                    (zoomcompensatie + evt. bankpas-kalibratie, zie useTrueSize) */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={shapeImg.src}
+                  alt={`Padvorm van Elvedes ${sku} op ware grootte`}
+                  style={{
+                    width: Math.round(shapeImg.cssWidth * sizeScale),
+                    height: Math.round(shapeImg.cssHeight * sizeScale),
+                  }}
+                />
+                <figcaption>Padvorm · ware grootte</figcaption>
+                <TrueSizeCalibration />
+              </figure>
+            )}
+          </div>
         )}
       </div>
     </article>

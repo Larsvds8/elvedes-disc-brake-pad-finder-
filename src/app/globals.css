@@ -432,11 +432,45 @@ button {
   min-width: min(320px, 100%);
 }
 
+/* Mediakolom rechts: verpakkingsfoto + padvorm onder elkaar */
+.card__media {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.card__packshot {
+  margin: 0;
+  text-align: center;
+}
+
+.card__packshot img {
+  display: block;
+  max-width: 220px;
+  max-height: 190px;
+  width: auto;
+  height: auto;
+  border: 1px solid var(--rand);
+  background: var(--wit);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card__packshot figcaption {
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--grijs-tekst);
+}
+
 .card__shape {
   margin: 0;
   flex: none;
   text-align: center;
-  margin-left: auto;
 }
 
 /* Padvorm op ware grootte: breedte/hoogte komen inline uit padImages.json
