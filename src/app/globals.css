@@ -478,6 +478,7 @@ button {
    afbeeldingsmaat afsnoept. */
 .card__shape img {
   display: block;
+  margin: 0 auto;
   box-sizing: content-box;
   border: 1px solid var(--rand);
   background: var(--wit);
