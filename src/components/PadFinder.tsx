@@ -30,6 +30,7 @@ import {
   clearCalibration,
   BANKPAS_MM,
 } from "@/lib/useTrueSize";
+import DistributorFinder from "./DistributorFinder";
 
 /* ================================================================
    Hoofdcomponent — twee gelijkwaardige ingangen:
@@ -619,6 +620,8 @@ function ResultCard({
               </ul>
             </details>
           )}
+
+          <DistributorFinder artikelnummer={variant ? variant.artikelnummer : kernArtikel} />
         </div>
 
         {(shapeImg || packshot) && (

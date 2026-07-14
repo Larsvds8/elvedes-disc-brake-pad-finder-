@@ -47,6 +47,16 @@ omschrijvingen: 6866, 6918.
    de map en verschijnen de foto's automatisch op de resultaatkaarten
    (herkend: jpg/jpeg/png/webp/avif, hoofdletterongevoelig).
 
+## Distributeurslijst bijwerken
+
+De "Vind een distributeur"-uitklapper op de resultaatkaarten gebruikt
+`src/data/distributors.json` — een snapshot van
+[elvedes.nl/en/find-distributor](https://elvedes.nl/en/find-distributor),
+inclusief eenmalig gegeocodeerde coördinaten voor "Sorteer op afstand".
+Wijzigt de lijst op elvedes.nl, draai dan `npm run build:distributors`
+(vereist internet; bestaande coördinaten worden hergebruikt, alleen nieuwe
+adressen gaan naar de geocoder). Dit zit bewust níet in `npm run build`.
+
 ## Lokaal als bestand (file://)
 
 `npm run build:local` maakt een export in `lokaal/` die zonder webserver werkt:
