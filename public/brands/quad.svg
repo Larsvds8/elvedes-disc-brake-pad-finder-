@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 130" width="460" height="130">
   <!-- QUAD-wordmark, nagetekend van de opdruk op de QHD-remhendels
        (geen officieel vectorbestand beschikbaar; merk is niet meer actief) -->
-  <g fill="none" stroke="#111111" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+  <g fill="none" stroke="#000000" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
     <!-- Q -->
     <rect x="18" y="18" width="84" height="86" rx="32" />
     <path d="M80,84 L114,114" />
