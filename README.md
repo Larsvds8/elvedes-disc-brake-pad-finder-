@@ -47,6 +47,16 @@ omschrijvingen: 6866, 6918.
    de map en verschijnen de foto's automatisch op de resultaatkaarten
    (herkend: jpg/jpeg/png/webp/avif, hoofdletterongevoelig).
 
+## Lokaal als bestand (file://)
+
+`npm run build:local` maakt een export in `lokaal/` die zonder webserver werkt:
+dubbelklik op `lokaal/index.html` (of gebruik `Pad Finder lokaal bijwerken.bat`
+één map hoger) en de finder opent via `file://` in de browser. Het script bouwt
+met `NEXT_PUBLIC_BASE_PATH="."` en herschrijft daarna de absolute `/_next/`-paden
+naar relatieve (een relatieve `assetPrefix` weigert `next/font`). De map
+`lokaal/` is een bouwproduct en staat in `.gitignore`; na een data- of
+codewijziging het script opnieuw draaien.
+
 ## Deployment (GitHub Pages)
 
 ```bash
