@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 130" width="460" height="130">
+  <!-- QUAD-wordmark, nagetekend van de opdruk op de QHD-remhendels
+       (geen officieel vectorbestand beschikbaar; merk is niet meer actief) -->
+  <g fill="none" stroke="#111111" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Q -->
+    <rect x="18" y="18" width="84" height="86" rx="32" />
+    <path d="M80,84 L114,114" />
+    <!-- U -->
+    <path d="M144,18 V68 a42,36 0 0 0 84,0 V18" />
+    <!-- A -->
+    <path d="M258,112 V62 a42,36 0 0 1 84,0 V112 M258,86 h84" />
+    <!-- D -->
+    <path d="M372,18 v94 M372,18 h23 a47,47 0 0 1 0,94 h-23" />
+  </g>
+</svg>
